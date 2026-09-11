@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import api from '../services/api';
 
 const initialPersonal = {
@@ -46,9 +46,6 @@ const initialEducation = {
 };
 
 export default function JobApplicationForm({ hubs = [] }) {
-  const [hubList, setHubList] = useState(hubs);
-  const [loadingHubs, setLoadingHubs] = useState(false);
-
   const [personal, setPersonal] = useState(initialPersonal);
   const [contact, setContact] = useState(initialContact);
   const [position, setPosition] = useState('Courier');
@@ -73,34 +70,8 @@ export default function JobApplicationForm({ hubs = [] }) {
 
   const fileInputRef = useRef(null);
 
-  // Fetch Delivery Centers / Hubs from Final Copy database
-  useEffect(() => {
-    if (hubs && hubs.length > 0) {
-      setHubList(hubs);
-    } else {
-      setLoadingHubs(true);
-      api.get('delivery-centers/')
-        .then((res) => {
-          const data = res.data?.results || res.data;
-          if (Array.isArray(data) && data.length > 0) {
-            setHubList(data);
-          } else {
-            // Fallback to hubs/
-            api.get('hubs/').then((r2) => {
-              const d2 = r2.data?.results || r2.data;
-              if (Array.isArray(d2)) setHubList(d2);
-            }).catch(() => {});
-          }
-        })
-        .catch(() => {
-          api.get('hubs/').then((r2) => {
-            const d2 = r2.data?.results || r2.data;
-            if (Array.isArray(d2)) setHubList(d2);
-          }).catch(() => {});
-        })
-        .finally(() => setLoadingHubs(false));
-    }
-  }, [hubs]);
+
+
 
   function resetForm() {
     setPersonal(initialPersonal);
@@ -513,12 +484,12 @@ export default function JobApplicationForm({ hubs = [] }) {
           </div>
         </div>
 
-        {/* 3. POSITION & PREFERRED DELIVERY CENTER */}
+        {/* 3. POSITION */}
         <div className="card bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-lg font-bold text-gray-800 mb-1">Position & Preferred Delivery Center</h2>
-          <p className="text-xs text-gray-500 mb-4">Select your desired role and target delivery center from our active network.</p>
+          <h2 className="text-lg font-bold text-gray-800 mb-1">Position</h2>
+          <p className="text-xs text-gray-500 mb-4">Select your desired role and employment type.</p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">Position Applied For <span className="text-red-500">*</span></label>
               <select
@@ -542,28 +513,6 @@ export default function JobApplicationForm({ hubs = [] }) {
               >
                 <option>Full-time</option>
                 <option>OCW / On-Call Workforce</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Preferred Delivery Center / Hub
-                {loadingHubs && <span className="text-xs text-blue-500 font-normal ml-1">(Loading centers...)</span>}
-              </label>
-              <select
-                className="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white font-medium text-gray-800"
-                value={preferredHub}
-                onChange={(e) => setPreferredHub(e.target.value)}
-              >
-                <option value="">Select preferred delivery center</option>
-                {hubList.map((h) => {
-                  const label = h.name ? (h.location ? `${h.name} (${h.location})` : h.name) : `Hub #${h.id}`;
-                  const val = h.name || `Hub #${h.id}`;
-                  return (
-                    <option key={h.id || h.name} value={val}>
-                      {label}
-                    </option>
-                  );
-                })}
               </select>
             </div>
           </div>
