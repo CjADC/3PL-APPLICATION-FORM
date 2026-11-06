@@ -19,8 +19,10 @@ __pycache__/
 env/
 venv/
 ENV/
+staticfiles/
+media/
 
-# Environment variables
+# Environment variables — NEVER commit secrets
 .env
 .env.local
 .env.*.local
