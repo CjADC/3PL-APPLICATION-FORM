@@ -55,7 +55,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # --- Database -----------------------------------------------------------
 # Shared Aiven PostgreSQL database (same DB as the Capstone CJ / 3PL system).
 # DATABASE_URL must be set as an Environment Variable in the Render dashboard.
-# No local .env file or SQLite fallback: this app is deployment-only.
 _DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
 if not _DATABASE_URL:
     raise RuntimeError(
